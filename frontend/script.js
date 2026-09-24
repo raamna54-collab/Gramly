@@ -728,13 +728,6 @@
                             👤
                             <span>Profile</span>
                         </button>
-                        <button
-    class="nav-item"
-    data-page="activity"
->
-    ♡
-    <span>Activity</span>
-</button>
 
                         <button
                             class="nav-item"
@@ -802,57 +795,33 @@
                 </main>
 
 
-                <nav class="bottomnav">
+                <nav class="bottom-nav">
 
-    <button
-        class="bottomnav-item active"
-        data-page="home"
-        title="Home"
-    >
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Home</span>
-    </button>
+                    <button
+                        data-page="home"
+                    >
+                        🏠
+                    </button>
 
-    <button
-        class="bottomnav-item"
-        data-page="explore"
-        title="Explore"
-    >
-        <span class="nav-icon">🔍</span>
-        <span class="nav-label">Explore</span>
-    </button>
+                    <button
+                        data-page="explore"
+                    >
+                        🔍
+                    </button>
 
-    <button
-        class="bottomnav-item create-nav"
-        data-action="create"
-        title="Create"
-    >
-        <span class="create-circle">＋</span>
-        <span class="nav-label">Create</span>
-    </button>
+                    <button
+                        data-action="create"
+                    >
+                        ➕
+                    </button>
 
-    <button
-        class="bottomnav-item"
-        data-page="activity"
-        title="Activity"
-    >
-        <span class="nav-icon">♡</span>
-        <span class="nav-label">Activity</span>
-    </button>
+                    <button
+                        data-page="profile"
+                    >
+                        👤
+                    </button>
 
-    <button
-        class="bottomnav-item"
-        data-page="profile"
-        title="Profile"
-    >
-        ${avatarHTML(
-            user,
-            "avatar bottom-avatar"
-        )}
-        <span class="nav-label">Profile</span>
-    </button>
-
-</nav>
+                </nav>
 
             </div>
 
@@ -870,137 +839,36 @@
        11. APP EVENTS
     ========================================================= */
 
-    /* =========================================================
-   11. APP EVENTS
-========================================================= */
+    function attachAppEvents() {
 
-function attachAppEvents() {
+        document
+            .querySelectorAll("[data-page]")
+            .forEach(button => {
 
-    document
-        .querySelectorAll("[data-page]")
-        .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                        const page =
+                            button.dataset.page;
 
-                    const page =
-                        button.dataset.page;
+                        if (page === "home") {
+                            renderHome();
+                        }
 
-                    /*
-                       Remove active state
-                       from all navigation buttons
-                    */
+                        if (page === "explore") {
+                            renderExplore();
+                        }
 
-                    document
-                        .querySelectorAll(
-                            ".nav-item, .bottomnav-item"
-                        )
-                        .forEach(item => {
-
-                            item.classList.remove(
-                                "active"
-                            );
-
-                        });
-
-
-                    /*
-                       Add active state to
-                       clicked navigation
-                    */
-
-                    document
-                        .querySelectorAll(
-                            `[data-page="${page}"]`
-                        )
-                        .forEach(item => {
-
-                            item.classList.add(
-                                "active"
-                            );
-
-                        });
-
-
-                    /*
-                       Render selected page
-                    */
-
-                    if (page === "home") {
-
-                        renderHome();
+                        if (page === "profile") {
+                            renderProfile();
+                        }
 
                     }
+                );
 
-                    if (page === "explore") {
+            });
 
-                        renderExplore();
-
-                    }
-
-                    if (page === "profile") {
-
-                        renderProfile();
-
-                    }
-
-                    if (page === "activity") {
-
-                        renderActivity();
-
-                    }
-
-                }
-            );
-
-        });
-
-
-    document
-        .querySelectorAll("[data-action]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const action =
-                        button.dataset.action;
-
-
-                    if (
-                        action === "theme"
-                    ) {
-
-                        toggleTheme();
-
-                    }
-
-
-                    if (
-                        action === "create"
-                    ) {
-
-                        openCreatePost();
-
-                    }
-
-
-                    if (
-                        action === "logout"
-                    ) {
-
-                        logout();
-
-                    }
-
-                }
-            );
-
-        });
-
-}
 
         document
             .querySelectorAll("[data-action]")
@@ -2104,58 +1972,6 @@ function attachAppEvents() {
                        String(userId);
 
             });
-
-            /* =========================================================
-   ACTIVITY
-========================================================= */
-
-function renderActivity() {
-
-    const page =
-        document.getElementById("page-content");
-
-    if (!page) return;
-
-    page.innerHTML = `
-
-        <section class="activity-page">
-
-            <div class="section-title">
-                <h2>Activity</h2>
-            </div>
-
-            <div class="activity-card">
-
-                <div class="activity-item">
-                    <div class="activity-icon">♡</div>
-
-                    <div>
-                        <strong>Likes & Comments</strong>
-                        <p>
-                            Your recent likes and comments
-                            will appear here.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon">👥</div>
-
-                    <div>
-                        <strong>New Followers</strong>
-                        <p>
-                            New follower activity will
-                            appear here.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-
-        </section>
-
-    `;
-}
 
 
         console.log(
