@@ -1927,8 +1927,10 @@
         if (!page) return;
 
 
-        const user =
-            currentUser();
+       const user = await api.getUser(currentUser().id);
+       console.log("PROFILE USER:", user);
+console.log("PROFILE FOLLOWING:", user.following);
+console.log("PROFILE FOLLOWING COUNT:", user.following?.length);
 
 
         page.innerHTML = `
