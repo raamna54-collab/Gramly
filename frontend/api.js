@@ -1,4 +1,5 @@
-const API_BASE = "http://localhost:5000/api";
+
+const API_BASE = "https://backend-ten-gamma-41.vercel.app/api";
 
 const api = {
 
