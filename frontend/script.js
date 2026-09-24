@@ -1919,8 +1919,6 @@
 
     async function renderProfile() {
 
-        
-
     const page =
         document.getElementById("page-content");
 
@@ -1929,14 +1927,33 @@
     try {
 
         // Current logged-in user
+        const sessionUser = currentUser();
+
+        if (!sessionUser) {
+            renderLogin();
+            return;
+        }
+
+        // Get complete user from backend
         const user =
-            await api.getUser(currentUser().id);
+            await api.getUser(
+                sessionUser._id || sessionUser.id
+            );
 
         console.log("PROFILE USER:", user);
 
         // Get all posts from backend
         const posts =
             await api.getPosts();
+
+        console.log("ALL POSTS:", posts);
+
+        // Get current user's actual MongoDB ID
+        const userId =
+            user._id || user.id;
+
+        console.log("CURRENT USER ID:", userId);
+
 
         // Only current user's posts
         const mine =
@@ -1946,12 +1963,27 @@
                     post.user?._id ||
                     post.user?.id;
 
+                console.log(
+                    "POST USER ID:",
+                    postUserId
+                );
+
                 return String(postUserId) ===
-                       String(user.id);
+                       String(userId);
+
             });
 
-        console.log("MY POSTS:", mine);
-        console.log("MY POSTS COUNT:", mine.length);
+
+        console.log(
+            "MY POSTS:",
+            mine
+        );
+
+        console.log(
+            "MY POSTS COUNT:",
+            mine.length
+        );
+
 
         page.innerHTML = `
 
@@ -1968,7 +2000,7 @@
 
                         <h2>
                             @${escapeHTML(
-                                user.username
+                                user.username || ""
                             )}
                         </h2>
 
@@ -2002,21 +2034,32 @@
                         <strong>
                             ${mine.length}
                         </strong>
-                        <span>Posts</span>
+
+                        <span>
+                            Posts
+                        </span>
                     </div>
+
 
                     <div>
                         <strong>
                             ${user.followers?.length || 0}
                         </strong>
-                        <span>Followers</span>
+
+                        <span>
+                            Followers
+                        </span>
                     </div>
+
 
                     <div>
                         <strong>
                             ${user.following?.length || 0}
                         </strong>
-                        <span>Following</span>
+
+                        <span>
+                            Following
+                        </span>
                     </div>
 
                 </div>
@@ -2029,21 +2072,27 @@
 
                     ${
                         mine.length
+
                         ? mine.map(post => `
 
                             <div class="tile">
 
                                 ${
                                     post.image
+
                                     ? `
+
                                         <img
                                             src="${escapeHTML(
                                                 post.image
                                             )}"
                                             alt="Post"
                                         >
+
                                     `
+
                                     : `
+
                                         <div
                                             class="text-media"
                                             style="
@@ -2054,10 +2103,13 @@
                                                 )};
                                             "
                                         >
+
                                             ${escapeHTML(
                                                 post.caption || ""
                                             )}
+
                                         </div>
+
                                     `
                                 }
 
@@ -2066,7 +2118,11 @@
                         `).join("")
 
                         : `
-                            <p>No posts yet.</p>
+
+                            <p>
+                                No posts yet.
+                            </p>
+
                         `
                     }
 
@@ -2093,11 +2149,16 @@
         );
 
         page.innerHTML = `
+
             <p>
                 Failed to load profile:
-                ${escapeHTML(error.message)}
+                ${escapeHTML(
+                    error.message
+                )}
             </p>
+
         `;
+
     }
 
 }
