@@ -19,6 +19,12 @@ const postSchema = new mongoose.Schema(
             default: ""
         },
 
+        // ADDED: background color/gradient save hoga
+        background: {
+            type: String,
+            default: "linear-gradient(135deg,#7c3aed,#ec4899)"
+        },
+
         likes: [
             {
                 type: mongoose.Schema.Types.ObjectId,
