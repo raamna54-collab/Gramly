@@ -1919,19 +1919,39 @@
 
     async function renderProfile() {
 
-        const page =
-            document.getElementById(
-                "page-content"
-            );
+        
 
-        if (!page) return;
+    const page =
+        document.getElementById("page-content");
 
+    if (!page) return;
 
-       const user = await api.getUser(currentUser().id);
-       console.log("PROFILE USER:", user);
-console.log("PROFILE FOLLOWING:", user.following);
-console.log("PROFILE FOLLOWING COUNT:", user.following?.length);
+    try {
 
+        // Current logged-in user
+        const user =
+            await api.getUser(currentUser().id);
+
+        console.log("PROFILE USER:", user);
+
+        // Get all posts from backend
+        const posts =
+            await api.getPosts();
+
+        // Only current user's posts
+        const mine =
+            posts.filter(post => {
+
+                const postUserId =
+                    post.user?._id ||
+                    post.user?.id;
+
+                return String(postUserId) ===
+                       String(user.id);
+            });
+
+        console.log("MY POSTS:", mine);
+        console.log("MY POSTS COUNT:", mine.length);
 
         page.innerHTML = `
 
@@ -1979,7 +1999,9 @@ console.log("PROFILE FOLLOWING COUNT:", user.following?.length);
                 <div class="stats">
 
                     <div>
-                        <strong>0</strong>
+                        <strong>
+                            ${mine.length}
+                        </strong>
                         <span>Posts</span>
                     </div>
 
@@ -2004,54 +2026,15 @@ console.log("PROFILE FOLLOWING COUNT:", user.following?.length);
                     id="profile-posts"
                     class="grid"
                 >
-                    Loading...
-                </div>
 
-            </section>
+                    ${
+                        mine.length
+                        ? mine.map(post => `
 
-        `;
+                            <div class="tile">
 
-
-        document
-            .getElementById(
-                "edit-profile"
-            )
-            .addEventListener(
-                "click",
-                openEditProfile
-            );
-
-
-        try {
-
-            const posts =
-                await api.getPosts();
-
-
-            const mine =
-                posts.filter(
-                    post =>
-                        String(
-                            post.user?._id
-                        ) ===
-                        String(user.id)
-                );
-
-
-            const box =
-                document.getElementById(
-                    "profile-posts"
-                );
-
-
-            box.innerHTML =
-                mine.map(
-                    post => `
-
-                        <div class="tile">
-
-                            ${
-                                post.image
+                                ${
+                                    post.image
                                     ? `
                                         <img
                                             src="${escapeHTML(
@@ -2061,29 +2044,63 @@ console.log("PROFILE FOLLOWING COUNT:", user.following?.length);
                                         >
                                     `
                                     : `
-                                        <div class="text-media">
+                                        <div
+                                            class="text-media"
+                                            style="
+                                                background:
+                                                ${escapeHTML(
+                                                    post.background ||
+                                                    "linear-gradient(135deg,#7c3aed,#ec4899)"
+                                                )};
+                                            "
+                                        >
                                             ${escapeHTML(
-                                                post.caption
+                                                post.caption || ""
                                             )}
                                         </div>
                                     `
-                            }
+                                }
 
-                        </div>
+                            </div>
 
-                    `
-                ).join("");
+                        `).join("")
+
+                        : `
+                            <p>No posts yet.</p>
+                        `
+                    }
+
+                </div>
+
+            </section>
+
+        `;
 
 
-        } catch (error) {
-
-            console.error(
-                error
+        document
+            .getElementById("edit-profile")
+            .addEventListener(
+                "click",
+                openEditProfile
             );
 
-        }
 
+    } catch (error) {
+
+        console.error(
+            "Profile error:",
+            error
+        );
+
+        page.innerHTML = `
+            <p>
+                Failed to load profile:
+                ${escapeHTML(error.message)}
+            </p>
+        `;
     }
+
+}
 
 
     /* =========================================================
